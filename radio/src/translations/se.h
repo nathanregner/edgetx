@@ -1090,27 +1090,32 @@
 #define TR_BL_ERASE_FLASH_MSG           "Detta kan ta upp till 200s"
 #define TR_BL_CURRENT_FW                "Nuvarande firmware:"
 
-#if defined(PCBNV14)
+#if defined(PCBPL18)
+  // Bootloader PL18/NB4+ specific - ASCII characters only
+  #define TR_BL_ENABLE                  "Aktivera"
+  #define TR_BL_DISABLE                 "Inaktivera"
+  #if defined(RADIO_NV14_FAMILY)
+    #define TR_BL_SELECT_KEY           "[R TRIM] foer att vaelja fil"
+    #define TR_BL_FLASH_KEY            "Tryck [R TRIM] foer att flasha"
+    #define TR_BL_ERASE_KEY            "Tryck [R TRIM] foer att erase"
+    #define TR_BL_EXIT_KEY             "[L TRIM] för att avsluta"
+  #elif defined(RADIO_NB4P)
+    #define TR_BL_SELECT_KEY           "[SW1A] foer att vaelja fil"
+    #define TR_BL_FLASH_KEY            "Tryck [SW1A] foer att flasha"
+    #define TR_BL_ERASE_KEY            "Tryck [SW1A] foer att erase"
+    #define TR_BL_EXIT_KEY             "[SW1B] för att avsluta"
+  #else
+    #define TR_BL_SELECT_KEY           "[TR4 Dn] foer att vaelja fil"
+    #define TR_BL_FLASH_KEY            "Tryck [TR4 Dn] foer att flasha"
+    #define TR_BL_ERASE_KEY            "Tryck [TR4 Dn] foer att erase"
+    #define TR_BL_EXIT_KEY             "[TR4 Up] för att avsluta"
+  #endif
+#elif defined(PCBNV14)
   #define TR_BL_SELECT_KEY              "[R TRIM] foer att vaelja fil"
   #define TR_BL_FLASH_KEY               "Tryck [R TRIM] foer att flasha"
   #define TR_BL_EXIT_KEY                " [L TRIM] för att avsluta"
   #define TR_BL_ENABLE                  "Aktivera"
   #define TR_BL_DISABLE                 "Inaktivera"
-#elif defined(PCBPL18)
-  // Bootloader PL18/NB4+ specific - ASCII characters only
-  #define TR_BL_ENABLE                  "Aktivera"
-  #define TR_BL_DISABLE                 "Inaktivera"
-  #if defined(RADIO_NB4P)
-    #define TR_BL_SELECT_KEY          "[SW1A] för att vaelja fil"
-    #define TR_BL_FLASH_KEY           "Haall [SW1A] foer att flasha"
-    #define TR_BL_ERASE_KEY           "Haall [SW1A] foer att radera"
-    #define TR_BL_EXIT_KEY            "[SW1B] to exit"
-  #else
-    #define TR_BL_SELECT_KEY          "[TR4 Ner] för att vaelja fil"
-    #define TR_BL_FLASH_KEY           "Haall [TR4 Ner] foer att flasha"
-    #define TR_BL_ERASE_KEY           "Haall [TR4 Ner] foer att radera"
-    #define TR_BL_EXIT_KEY            "[TR4 Upp] foer att avbryta"
-  #endif
 #else
   #define TR_BL_SELECT_KEY              "[ENT] för att vaelja fil"
   #define TR_BL_FLASH_KEY               "Haall [ENT] foer att flasha"
