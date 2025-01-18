@@ -14,17 +14,22 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
+        packages.default = pkgs.callPackage ./package.nix { };
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             cmake
             gnumake
-            stdenv.cc
+            # llvmPackages.clang
+            # llvmPackages.bintools
+            clang-tools
             (python3.withPackages (
               packages: with packages; [
                 asciitree
                 jinja2
                 pillow
+                libclang
                 # aqtinstall
+                clang
                 lz4
                 pyelftools
               ]
