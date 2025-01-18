@@ -22,7 +22,7 @@
 #pragma once
 
 #include "storage.h"
-#include "miniz.h"
+#include <miniz/miniz.h>
 
 #include <QtCore>
 #include <list>
