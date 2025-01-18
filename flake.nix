@@ -14,7 +14,7 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        packages.default = pkgs.callPackage ./package.nix { };
+        packages.default = pkgs.libsForQt5.callPackage ./package.nix { };
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
             cmake
