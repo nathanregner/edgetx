@@ -201,8 +201,8 @@ set(CPN_COMMON_LIB common)
 
 ############# Supporting libraries ###############
 
-include(FetchMiniz)
-include(FetchYamlCpp)
+# include(FetchMiniz)
+# include(FetchYamlCpp)
 
 include(FetchMaxLibQt)
 
@@ -288,7 +288,7 @@ set(simu_SRCS simulator.cpp )
 add_executable(${SIMULATOR_NAME} MACOSX_BUNDLE ${WIN_EXECUTABLE_TYPE} ${simu_SRCS} ${icon_RC})
 target_link_libraries(${SIMULATOR_NAME} PRIVATE ${CPN_COMMON_LIB})
 
-add_subdirectory(tests)
+# add_subdirectory(tests)
 
 ############# Install ####################
 
@@ -608,43 +608,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   set(LINUXDEPLOY_PLUGIN_QT_URL "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous")
   set(LINUXDEPLOY_DIRECTORY "${CMAKE_BINARY_DIR}/linuxdeploy")
   set(LINUXDEPLOY_APP "${LINUXDEPLOY_DIRECTORY}/usr/bin/linuxdeploy")
-
-  if (NOT EXISTS "${LINUXDEPLOY_DIRECTORY}")
-    message(STATUS "Downloading linuxdeploy and plugins...")
-
-    file(DOWNLOAD "${LINUXDEPLOY_URL}/${LINUXDEPLOY_APPIMAGE}" "${CMAKE_BINARY_DIR}/${LINUXDEPLOY_APPIMAGE}")
-    file(DOWNLOAD "${LINUXDEPLOY_PLUGIN_QT_URL}/${LINUXDEPLOY_PLUGIN_QT}" "${CMAKE_BINARY_DIR}/${LINUXDEPLOY_PLUGIN_QT}")
-
-    message(STATUS "Downloading linuxdeploy and plugins finished")
-
-    # for security reasons by default AppImages are prohibited from running in Docker containers
-    # so extract Appimage contents and run as normal apps
-
-    file(GLOB linuxdeployfiles ${CMAKE_BINARY_DIR}/linuxdeploy*.AppImage)
-
-    foreach(file ${linuxdeployfiles})
-      execute_process(
-        COMMAND chmod +x "${file}"
-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
-
-      execute_process(
-        COMMAND "${file}" --appimage-extract
-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
-
-      file(REMOVE "${file}")
-    endforeach()
-
-    file(REMOVE_RECURSE "${LINUXDEPLOY_DIRECTORY}")
-
-    execute_process(
-      COMMAND mv "${CMAKE_BINARY_DIR}/squashfs-root" "${LINUXDEPLOY_DIRECTORY}"
-      WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
-
-    # test installation
-    #execute_process(
-    #  COMMAND ${LINUXDEPLOY_APP} --list-plugins
-    #  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
-  endif()
 
   set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}")
   set(CPACK_GENERATOR "External")

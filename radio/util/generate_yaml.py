@@ -37,7 +37,7 @@ def dump_node(node):
     print(asciitree.draw_tree(node, node_children, print_node))
 
 has_errors = False
-    
+
 def print_error(*args):
     print("ERROR:",*args,file=sys.stderr)
     has_errors = True
@@ -136,7 +136,7 @@ class FieldAST(AST_Element):
 
         if not hasattr(self,'bits'):
             self.bits = t.get_size() * 8
-            
+
         if t.kind == TypeKind.TYPEDEF:
             self.type = map_type(t.get_canonical().spelling)
         elif t.kind == TypeKind.CONSTANTARRAY:
@@ -173,7 +173,7 @@ class StructAST(AST_Element):
 
 class UnionAST(StructAST):
     type = 'union'
-        
+
 class EnumAST(AST_Element):
     type = 'enum'
 
@@ -193,7 +193,7 @@ class AST:
             if e.name == name:
                 return True
         return False
-        
+
     def get_enums(self):
         return self.enums
 
@@ -210,11 +210,11 @@ class AST:
         for s in self.structs:
             if s.name == name:
                 return s
-        return None        
+        return None
 
     def get_elmts(self):
         return self.enums + self.structs
-    
+
     def append(self, elmt):
         if isinstance(elmt, StructAST):
             self.structs.append(elmt)
@@ -332,7 +332,7 @@ def make_fake_array_struct(f, node_type, use_idx):
     f.var_type = struct_name
     #f.var_name = field.type
 
-        
+
 def parse_field_array(f, node):
     et = node.type.element_type
     if f.type != 'string':
@@ -432,11 +432,11 @@ def parse_enum_field(ast,node):
         for a in ann:
             if a['type'] == 'skip':
                 return
-    
+
     enum_value = node.spelling
     if '_' in enum_value:
         enum_value = enum_value[enum_value.index('_')+1:]
-    
+
     st = AST_Element(enum_value, node)
     st.value = node.spelling #node.enum_value
     ast.append(st)
@@ -532,7 +532,7 @@ for tn in top_node_names:
 # Do not generate anything we had some errors
 if has_errors:
     sys.exit(-1)
-        
+
 #print("Enums:", RootAST.get_enums())
 #print("Structs:", RootAST.get_structs())
 #print(asciitree.draw_tree(RootAST, ast_children, print_ast_node))
