@@ -1,13 +1,17 @@
 {
-  clangStdenv,
   pkgs,
+  SDL2,
+  clangStdenv,
+  dfu-util,
   fetchFromGitHub,
-
+  libusb1,
+  miniz,
+  openssl,
   qtbase,
+  qtmultimedia,
   qtserialport,
   qttools,
-  qtmultimedia,
-  SDL2,
+  yaml-cpp,
   ...
 }:
 let
@@ -29,47 +33,43 @@ clangStdenv.mkDerivation rec {
     qttools
     cmake
     gnumake
-    # llvmPackages.clang
-    # llvmPackages.bintools
+    pkg-config
     clang-tools
     (python3.withPackages (
       packages: with packages; [
         asciitree
-        jinja2
-        pillow
-        libclang
-        # aqtinstall
         clang
+        jinja2
+        libclang
         lz4
+        pillow
         pyelftools
       ]
     ))
   ];
 
   # libsForQt5.callPackage
-  buildInputs =
-    [
-
-      qtbase
-      qtserialport
-      qtmultimedia
-      SDL2
-    ]
-    ++ (with pkgs; [
-      # libssl1
-      pkg-config
-      openssl
-      libusb1
-      # libssl
-      dfu-util
-    ]);
+  buildInputs = [
+    yaml-cpp
+    qtbase
+    qtserialport
+    qtmultimedia
+    SDL2
+    openssl
+    miniz
+    libusb1
+    dfu-util
+  ];
 
   dontWrapQtApps = true;
 
   buildPhase = ''
-    cmake -DPCB=X7 -DPCBREV=MT12 .
-    cmake --build . -j"${JOBS}" --target native-configure
-    cmake --build native -j"${JOBS}" --target libsimulator
+
+    COMMON_OPTIONS="-DGVARS=YES -DHELI=YES -DLUA=YES -Wno-dev -DCMAKE_BUILD_TYPE=Release"
+        cmake -DPCB=X7 -DPCBREV=MT12 .
+        cmake --build . -j"${JOBS}" --target native-configure
+        # cmake --build native -j"${JOBS}" --target libsimulator
+        cmake --build native -j"${JOBS}" --target package
   '';
 
   installPhase = ''
