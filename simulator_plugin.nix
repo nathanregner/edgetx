@@ -1,18 +1,24 @@
 {
+
+  SDL2,
+  clang-tools,
   clangStdenv,
+  cmake,
   dfu-util,
   fetchFromGitHub,
+  gnumake,
   gtest,
   libusb1,
   miniz,
   openssl,
-  cmake,
-  gnumake,
   pkg-config,
-  clang-tools,
+  pkgs,
   python3,
+  qtbase,
+  qtmultimedia,
+  qtserialport,
+  qttools,
   yaml-cpp,
-  ...
 }:
 
 {
@@ -36,6 +42,7 @@ clangStdenv.mkDerivation rec {
   src = ./.;
 
   nativeBuildInputs = [
+    qttools
     cmake
     gnumake
     pkg-config
@@ -55,11 +62,15 @@ clangStdenv.mkDerivation rec {
 
   # libsForQt5.callPackage
   buildInputs = [
-    # dfu-util
-    # libusb1
-    # miniz
-    # openssl
-    # yaml-cpp
+    SDL2
+    dfu-util
+    libusb1
+    miniz
+    openssl
+    qtbase
+    qtmultimedia
+    qtserialport
+    yaml-cpp
   ];
 
   dontWrapQtApps = true;
@@ -93,12 +104,23 @@ clangStdenv.mkDerivation rec {
     cmake --build native --target libsimulator
   '';
 
-  cmakeFlags = [
-    "-DGTEST_ROOT=${gtest.src}/googletest"
-    "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
-    # file RPATH_CHANGE could not write new RPATH
-    "-DCMAKE_SKIP_BUILD_RPATH=ON"
-  ];
+  cmakeFlags =
+    let
+      maxLibQt = fetchFromGitHub {
+        owner = "mpaperno";
+        repo = "maxLibQt";
+        rev = "b903e7a755b241313b7acdea0258ee17cbd8fc04";
+        hash = "sha256-xKgUIuh6ANsKrih1lK1mKPCzh52RnDJVT4XwQvI97mk=";
+      };
+    in
+    [
+      "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
+      "-DGTEST_ROOT=${gtest.src}/googletest"
+      "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
+      # file RPATH_CHANGE could not write new RPATH
+      "-DCMAKE_SKIP_BUILD_RPATH=ON"
+      "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
+    ];
 
   installPhase = ''
     #

@@ -18,7 +18,7 @@
           # miniz = pkgs.callPackage ./miniz.nix { };
           maxLibQt = pkgs.libsForQt5.callPackage ./maxlibqt.nix { };
           default = pkgs.libsForQt5.callPackage ./package.nix { inherit (pkgs) miniz; };
-          plugin = pkgs.callPackage ./simulator_plugin.nix { } { target = "mt12"; };
+          plugin = pkgs.libsForQt5.callPackage ./simulator_plugin.nix { } { target = "mt12"; };
         };
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
