@@ -75,7 +75,7 @@ function(GenerateDatacopy source output)
     -DBACKUP ${GEN_DATACOPY_ARGS} ${SYSROOT_ARG})
 
   set(GEN_DATACOPY_CMD
-    ${PYTHON_EXECUTABLE} ${GEN_DATACOPY} ${GEN_DATACOPY_ARGS})
+    generate_datacopy ${GEN_DATACOPY_ARGS})
 
   add_custom_command(
     OUTPUT ${output}

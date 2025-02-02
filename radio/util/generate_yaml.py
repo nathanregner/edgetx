@@ -498,8 +498,6 @@ if not find_clang.initLibClang():
 
 index = find_clang.index
 args = ['-x', 'c++', '-std=c++11', '-Wno-deprecated-register'] + sys.argv[4:]
-if find_clang.builtin_hdr_path:
-    args.append("-I" + find_clang.builtin_hdr_path)
 
 translation_unit = index.parse(sys.argv[1], args)
 

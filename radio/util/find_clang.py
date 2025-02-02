@@ -58,55 +58,11 @@ def getBuiltinHeaderPath(library_path):
 
     return None
 
-def findLibClang():
-    if sys.platform == "darwin":
-        knownPaths = [
-            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib",
-            "/Library/Developer/CommandLineTools/usr/lib"
-        ]
-        if Config.library_path:
-            knownPaths.insert(0, Config.library_path)
-        libSuffix = ".dylib"
-    elif sys.platform.startswith("linux"):
-        knownPaths = [
-            "/usr/lib/llvm-14/lib",
-            "/usr/lib/llvm-11/lib",
-            "/usr/lib/llvm-7/lib",
-            "/usr/lib/llvm-6.0/lib",
-            "/usr/lib/llvm-3.8/lib",
-            "/usr/local/lib",
-            "/usr/lib",
-            "/usr/lib64"
-        ]
-        libSuffix = ".so"
-    elif sys.platform == "win32" or sys.platform == "msys":
-        knownPaths = os.environ.get("PATH").split(os.pathsep)
-        libSuffix = ".dll"
-    else:
-        # Unsupported platform
-        return None
-
-    for path in knownPaths:
-        # print("trying " + path)
-        if os.path.exists(path + "/libclang" + libSuffix):
-            return path
-        elif (sys.platform == "win32" or sys.platform == "msys"):
-            # Check for versioned and non-versioned libclang.dll if on msys
-            pattern = re.compile(r'^libclang(-\d+(\.\d+)?)?\.dll$')
-            if os.path.exists(path):
-                for filename in os.listdir(path):
-                    if pattern.match(filename):
-                        return os.path.join(path, filename)
-
-    # If no known path is found
-    return None
-
 def initLibClang():
     global index
 
-    library_path = findLibClang()
+    library_path = os.environ["LIBCLANG_PATH"]
     if library_path:
-        print("libclang found: " + library_path, file=sys.stderr)
         if os.path.isdir(library_path):
             Config.set_library_path(library_path)
         else:
@@ -122,11 +78,6 @@ def initLibClang():
         print("ERROR (find_clang): could not load libclang from '%s'." % library_path, file=sys.stderr)
         print("                  : detected platform '%s'" % sys.platform, file=sys.stderr)
         return False
-
-    global builtin_hdr_path
-    builtin_hdr_path = getBuiltinHeaderPath(library_path)
-    if builtin_hdr_path:
-        print("builtin header path found: " + builtin_hdr_path, file=sys.stderr)
 
     # Everything is OK, libclang can be used
     return True

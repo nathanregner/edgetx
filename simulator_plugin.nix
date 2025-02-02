@@ -1,30 +1,39 @@
 {
+  pkgs,
+  lib,
   SDL2,
-  clangStdenv,
+  clang-tools,
+  cmake,
   dfu-util,
   fetchFromGitHub,
+  generate_datacopy,
+  gnumake,
   gtest,
   libusb1,
+  llvmPackages,
   miniz,
   openssl,
+  pkg-config,
+  python3,
   qtbase,
   qtmultimedia,
   qtserialport,
   qttools,
+  stdenv,
   yaml-cpp,
   ...
 }:
 
 {
-  plugin_name,
+  target,
 }:
 
 let
   JOBS = "12";
 in
-clangStdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   # clangStdenv.mkDerivation rec {
-  pname = "edgetx";
+  pname = "edgetx-libsimulator-${target}";
   version = "2.10.5";
   # src = fetchFromGitHub {
   #   owner = "EdgeTX";
@@ -35,21 +44,20 @@ clangStdenv.mkDerivation rec {
   # };
   src = ./.;
 
-  nativeBuildInputs = with pkgs; [
-    qttools
-    cmake
-    gnumake
-    pkg-config
+  nativeBuildInputs = [
     clang-tools
+    cmake
+    generate_datacopy
+    gnumake
+    llvmPackages.libclang
+    pkg-config
+    qttools
     (python3.withPackages (
       packages: with packages; [
-        # # clang
-        # # libclang
-        # asciitree
         jinja2
+        libclang
         lz4
         pillow
-        # pyelftools
       ]
     ))
   ];
@@ -73,11 +81,30 @@ clangStdenv.mkDerivation rec {
     patchShebangs .
   '';
 
+  env.TARGET = target;
+  env.LIBCLANG_PATH = "${lib.getLib llvmPackages.libclang}/lib";
+  # env.CLANG_INCLUDE = "${llvmPackages.clang}/resource-root/include";
+
   buildPhase = ''
-    cmake -DPCB=X7 -DPCBREV=MT12 .
-    cmake --build . -j"${JOBS}" --target native-configure
-    cmake --build native -j"${JOBS}" --target package
+    COMMON_OPTIONS="-DGVARS=YES -DHELI=YES -DLUA=YES -Wno-dev -DCMAKE_BUILD_TYPE=Release $cmakeFlags"
+    if [ "$(uname)" = "Darwin" ]; then
+      COMMON_OPTIONS="$COMMON_OPTIONS -DCMAKE_OSX_DEPLOYMENT_TARGET='10.15'"
+    fi
+
+    source ../tools/build-common.sh
+
+    BUILD_OPTIONS="$COMMON_OPTIONS "
+    if ! get_target_build_options "$TARGET"; then
+        echo "Error: Failed to find a match for target '$target_name'"
+        exit 1
+    fi
+
+    cmake $BUILD_OPTIONS .
+    cmake --build . -j$NIX_BUILD_CORES --target native-configure
+    cmake --build native -j$NIX_BUILD_CORES --target libsimulator
   '';
+
+  enableParallelBuilding = true;
 
   cmakeFlags =
     let
@@ -98,8 +125,6 @@ clangStdenv.mkDerivation rec {
     ];
 
   installPhase = ''
-    #
+    mv ./native/libedgetx-${target}-simulator.so $out
   '';
-  # BUILD_OPTIONS+="-DPCB=X7 -DPCBREV=MT12"
-
 }
