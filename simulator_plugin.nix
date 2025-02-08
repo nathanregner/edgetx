@@ -11,6 +11,7 @@
   gtest,
   libusb1,
   llvmPackages,
+  lvgl,
   miniz,
   openssl,
   pkg-config,
@@ -119,7 +120,9 @@ stdenv.mkDerivation rec {
       "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
       "-DGTEST_ROOT=${gtest.src}/googletest"
       "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
+      "-DLVGL_SRC_DIR=${lvgl.src}/src"
       # file RPATH_CHANGE could not write new RPATH
+      "-DCMAKE_SKIP_BUILD_RPATH=ON"
       "-DCMAKE_SKIP_BUILD_RPATH=ON"
       "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
     ];
