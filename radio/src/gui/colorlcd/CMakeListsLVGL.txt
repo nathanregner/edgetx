@@ -22,13 +22,13 @@ set(LVGL_SOURCES_MINIMAL
 
   # STM32 specific
   draw/stm32_dma2d/lv_gpu_stm32_dma2d.c
-
+  
   hal/lv_hal_disp.c
   hal/lv_hal_tick.c
 
   font/lv_font.c
   font/lv_font_fmt_txt.c
-
+  
   misc/lv_area.c
   misc/lv_async.c
   misc/lv_color.c
@@ -109,6 +109,8 @@ set(LVGL_SOURCES
   extra/widgets/tileview/lv_tileview.c
   extra/widgets/win/lv_win.c
 )
+
+set(LVGL_SRC_DIR thirdparty/lvgl/src)
 
 list(TRANSFORM LVGL_SOURCES_MINIMAL PREPEND ${LVGL_SRC_DIR}/)
 list(TRANSFORM LVGL_SOURCES PREPEND ${LVGL_SRC_DIR}/)
