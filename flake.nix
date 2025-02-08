@@ -19,9 +19,28 @@
           # miniz = pkgs.callPackage ./miniz.nix { };
           maxLibQt = pkgs.libsForQt5.callPackage ./maxlibqt.nix { };
           default = pkgs.libsForQt5.callPackage ./package.nix { inherit (pkgs) miniz; };
-          plugin = pkgs.libsForQt5.callPackage ./simulator_plugin.nix { inherit generate_datacopy; } {
-            target = "mt12";
+          buildPlugin = pkgs.libsForQt5.callPackage ./simulator_plugin.nix {
+            inherit
+              generate_datacopy
+              ;
           };
+          plugins = builtins.listToAttrs (
+            builtins.map
+              (target: {
+                name = target;
+                value = buildPlugin {
+                  inherit target;
+                };
+              })
+              # ["BETAFPV LiteRadio 3 Pro", "lr3pro-"] => "lr3pro"
+              (
+                builtins.map (target: lib.removeSuffix "-" (builtins.elemAt target 1))
+                  (builtins.fromJSON (builtins.readFile ./fw.json)).targets
+              )
+          );
+          allPlugins = pkgs.linkFarm "all-plugins" (
+            lib.mapAttrsToList (name: path: { inherit name path; }) plugins
+          );
           generate_datacopy = pkgs.libsForQt5.callPackage ./generate_datacopy.nix { };
         };
         devShell = pkgs.mkShell (
