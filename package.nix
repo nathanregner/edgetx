@@ -1,24 +1,28 @@
 {
-  pkgs,
+  lib,
   SDL2,
-  clangStdenv,
+  clang-tools,
+  cmake,
   dfu-util,
   fetchFromGitHub,
-  gtest,
+  generate_datacopy,
+  gnumake,
   libusb1,
+  llvmPackages,
   miniz,
   openssl,
+  pkg-config,
+  python3,
   qtbase,
   qtmultimedia,
   qtserialport,
   qttools,
+  stdenv,
+  wrapQtAppsHook,
   yaml-cpp,
   ...
 }:
-let
-  JOBS = "12";
-in
-clangStdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   # clangStdenv.mkDerivation rec {
   pname = "edgetx";
   version = "2.10.5";
@@ -31,12 +35,16 @@ clangStdenv.mkDerivation rec {
   # };
   src = ./.;
 
-  nativeBuildInputs = with pkgs; [
-    qttools
-    cmake
-    gnumake
-    pkg-config
+  nativeBuildInputs = [
+    wrapQtAppsHook
     clang-tools
+    cmake
+    generate_datacopy
+    gnumake
+    llvmPackages.libclang
+    pkg-config
+    qttools
+    # TODO remov
     (python3.withPackages (
       packages: with packages; [
         # # clang
@@ -63,18 +71,23 @@ clangStdenv.mkDerivation rec {
     yaml-cpp
   ];
 
-  dontWrapQtApps = true;
+  # dontWrapQtApps = true;
 
   postPatch = ''
     patchShebangs .
+    patchShebangs companion/util
+    head companion/util/generate_hwdefs_qrc.py
   '';
 
+  env.LIBCLANG_PATH = "${lib.getLib llvmPackages.libclang}/lib";
+  # env.CLANG_INCLUDE = "${llvmPackages.clang}/resource-root/include";
+
   buildPhase = ''
-    cmake -DPCB=X7 -DPCBREV=MT12 .
-    cmake --build . -j"${JOBS}" --target native-configure
-    # cmake --build native -j"${JOBS}" --target libsimulator
-    cmake --build native -j"${JOBS}" --target package
+    mkdir $out
+    ../tools/build-companion.sh -j$NIX_BUILD_CORES .. $out
   '';
+
+  enableParallelBuilding = true;
 
   cmakeFlags =
     let
@@ -87,15 +100,15 @@ clangStdenv.mkDerivation rec {
     in
     [
       "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
-      "-DGTEST_ROOT=${gtest.src}/googletest"
+      # "-DGTEST_ROOT=${gtest.src}/googletest"
       "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
       # file RPATH_CHANGE could not write new RPATH
       "-DCMAKE_SKIP_BUILD_RPATH=ON"
-      "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
     ];
 
   installPhase = ''
-    #
+    mkdir -p $out
+    mv native/_CPack_Packages/Linux/External/AppImage/usr/* $out
   '';
   # BUILD_OPTIONS+="-DPCB=X7 -DPCBREV=MT12"
 

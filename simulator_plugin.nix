@@ -52,6 +52,7 @@ stdenv.mkDerivation rec {
     llvmPackages.libclang
     pkg-config
     qttools
+    # TODO remov
     (python3.withPackages (
       packages: with packages; [
         jinja2
@@ -117,11 +118,10 @@ stdenv.mkDerivation rec {
     in
     [
       "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
-      "-DGTEST_ROOT=${gtest.src}/googletest"
+      # "-DGTEST_ROOT=${gtest.src}/googletest"
       "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
       # file RPATH_CHANGE could not write new RPATH
       "-DCMAKE_SKIP_BUILD_RPATH=ON"
-      "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
     ];
 
   installPhase = ''

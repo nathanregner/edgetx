@@ -18,7 +18,13 @@
         packages = rec {
           # miniz = pkgs.callPackage ./miniz.nix { };
           maxLibQt = pkgs.libsForQt5.callPackage ./maxlibqt.nix { };
-          default = pkgs.libsForQt5.callPackage ./package.nix { inherit (pkgs) miniz; };
+          default = pkgs.libsForQt5.callPackage ./package.nix {
+            # inherit (pkgs) miniz;
+            inherit
+              generate_datacopy
+              ;
+
+          };
           buildPlugin = pkgs.libsForQt5.callPackage ./simulator_plugin.nix {
             inherit
               generate_datacopy
