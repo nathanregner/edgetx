@@ -201,9 +201,6 @@ set(CPN_COMMON_LIB common)
 
 ############# Supporting libraries ###############
 
-# include(FetchMiniz)
-# include(FetchYamlCpp)
-
 include(FetchMaxLibQt)
 
 add_subdirectory(datamodels)
@@ -354,7 +351,7 @@ elseif(PCB STREQUAL X10 AND PCBREV STREQUAL T18)
   set(FLAVOUR t18)
 elseif(PCB STREQUAL PL18 AND PCBREV STREQUAL EL18)
   set(FLAVOUR el18)
-elseif(PCB STREQUAL PL18 AND PCBREV STREQUAL PL18EV)  
+elseif(PCB STREQUAL PL18 AND PCBREV STREQUAL PL18EV)
   set(FLAVOUR pl18ev)
 elseif(PCB STREQUAL PL18)
   set(FLAVOUR pl18)
@@ -600,20 +597,5 @@ if(APPLE)
   set(CPACK_DMG_DS_STORE ${PROJECT_SOURCE_DIR}/companion/targets/mac/DS_Store)
   set(CPACK_PACKAGE_FILE_NAME "edgetx-${CPACK_PACKAGE_NAME_LOWERCASE}-${VERSION}")
 endif(APPLE)
-
-if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  set(LINUXDEPLOY_APPIMAGE "linuxdeploy-x86_64.AppImage")
-  set(LINUXDEPLOY_PLUGIN_QT "linuxdeploy-plugin-qt-x86_64.AppImage")
-  set(LINUXDEPLOY_URL "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous")
-  set(LINUXDEPLOY_PLUGIN_QT_URL "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous")
-  set(LINUXDEPLOY_DIRECTORY "${CMAKE_BINARY_DIR}/linuxdeploy")
-  set(LINUXDEPLOY_APP "${LINUXDEPLOY_DIRECTORY}/usr/bin/linuxdeploy")
-
-  set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}")
-  set(CPACK_GENERATOR "External")
-
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CPackLinuxDeploy.cmake.in "${CMAKE_BINARY_DIR}/CPackExternal.cmake" @ONLY)
-  set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${CMAKE_BINARY_DIR}/CPackExternal.cmake")
-endif()
 
 include(CPack)

@@ -47,15 +47,12 @@ stdenv.mkDerivation rec {
     # TODO remov
     (python3.withPackages (
       packages: with packages; [
-        # # clang
-        # # libclang
-        # asciitree
         jinja2
         lz4
         pillow
-        # pyelftools
       ]
     ))
+
   ];
 
   # libsForQt5.callPackage
@@ -100,7 +97,6 @@ stdenv.mkDerivation rec {
     in
     [
       "-DFETCHCONTENT_SOURCE_DIR_MAXLIBQT=${maxLibQt}"
-      # "-DGTEST_ROOT=${gtest.src}/googletest"
       "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
       # file RPATH_CHANGE could not write new RPATH
       "-DCMAKE_SKIP_BUILD_RPATH=ON"
@@ -109,7 +105,8 @@ stdenv.mkDerivation rec {
   installPhase = ''
     mkdir -p $out
     mv native/_CPack_Packages/Linux/External/AppImage/usr/* $out
+    mkdir -p $out/all
+    mv * $out/all
   '';
   # BUILD_OPTIONS+="-DPCB=X7 -DPCBREV=MT12"
-
 }

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Stops on first error, echo on
 set -e
 set -x
@@ -12,21 +14,18 @@ else
   JOBS=12
 fi
 
-while [ $# -gt 0 ]; do
+while [ $# -gt 0 ]
+do
   case "$1" in
-  --jobs=*)
-    JOBS="${1#*=}"
-    ;;
-  -j*)
-    JOBS="${1#*j}"
-    ;;
-  -*)
-    echo >&2 "usage: $0 [-j<jobs>|--jobs=<jobs>] SRCDIR OUTDIR"
-    exit 1
-    ;;
-  *)
-    break
-    ;; # terminate while loop
+    --jobs=*)
+      JOBS="${1#*=}";;
+    -j*)
+      JOBS="${1#*j}";;
+    -*)
+      echo >&2 "usage: $0 [-j<jobs>|--jobs=<jobs>] SRCDIR OUTDIR"
+      exit 1;;
+    *)
+      break;;   # terminate while loop
   esac
   shift
 done
@@ -63,7 +62,16 @@ if [[ -z ${EDGETX_VERSION_SUFFIX} ]]; then
   fi
 fi
 
-declare -a simulator_plugins=(mt12)
+declare -a simulator_plugins=(x9lite x9lites
+                              x7 x7access
+                              t8 t12 t12max tx12 tx12mk2
+                              zorro commando8 boxer pocket mt12 gx12
+                              tlite tpro tprov2 tpros bumblebee lr3pro t14
+                              x9d x9dp x9dp2019 x9e
+                              xlite xlites
+                              nv14 el18 pl18 pl18ev
+                              x10 x10express x12s
+                              t15 t16 t18 t20 t20v2 tx16s f16 v16)
 
 for plugin in "${simulator_plugins[@]}"; do
   BUILD_OPTIONS="${COMMON_OPTIONS} "
