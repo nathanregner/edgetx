@@ -99,6 +99,13 @@ stdenv.mkDerivation rec {
     "-DDFU_UTIL_PATH=${dfu-util}/bin/dfu-util"
     # file RPATH_CHANGE could not write new RPATH
     "-DCMAKE_SKIP_BUILD_RPATH=ON"
+
+    # `COMMON_OPTIONS` from tools/build-companion.sh
+    "-DGVARS=YES"
+    "-DHELI=YES"
+    "-DLUA=YES"
+    "-Wno-dev"
+    "-DCMAKE_BUILD_TYPE=Release"
   ];
 
   enableParallelBuilding = true;
@@ -111,10 +118,9 @@ stdenv.mkDerivation rec {
     ../tools/build-companion.sh -j$NIX_BUILD_CORES .. .
 
     for plugin in "''${SIMULATOR_PLUGINS[@]}"; do
-      BUILD_OPTIONS="$COMMON_OPTIONS "
-
       echo "Building $plugin"
 
+      BUILD_OPTIONS=""
       if ! get_target_build_options "$plugin"; then
         echo "Error: Failed to find a match for target '$plugin'"
         exit 1
