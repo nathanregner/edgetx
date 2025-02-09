@@ -104,7 +104,7 @@ def findLibClang():
 def initLibClang():
     global index
 
-    library_path = findLibClang()
+    library_path = os.environ["LIBCLANG_PATH"]
     if library_path:
         print("libclang found: " + library_path, file=sys.stderr)
         if os.path.isdir(library_path):
