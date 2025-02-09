@@ -1,5 +1,4 @@
 {
-  lib,
   SDL2,
   clang-tools,
   cmake,
@@ -7,6 +6,8 @@
   fetchFromGitHub,
   generate_datacopy,
   gnumake,
+  jq,
+  lib,
   libusb1,
   llvmPackages,
   miniz,
@@ -22,7 +23,7 @@
   wrapQtAppsHook,
   yaml-cpp,
 
-  simulatorPlugins ? null,
+  simulatorPlugins ? [ ], # empty to build all; at least one seems to be required
   ...
 }:
 
@@ -50,8 +51,8 @@ stdenv.mkDerivation rec {
   #   owner = "EdgeTX";
   #   repo = pname;
   #   rev = "v${version}";
-  #   fetchSubmodules = false;
-  #   hash = "sha256-Ph5xcoMp5KZmf1A9ylo0bt6GyyXADR3masoSo/mx4PQ=";
+  #   fetchSubmodules = true;
+  #   hash = "";
   # };
 
   nativeBuildInputs = [
@@ -59,6 +60,7 @@ stdenv.mkDerivation rec {
     cmake
     generate_datacopy
     gnumake
+    jq
     pkg-config
     qttools
     wrapQtAppsHook
@@ -83,15 +85,13 @@ stdenv.mkDerivation rec {
     yaml-cpp
   ];
 
-  postPatch = ''
-    patchShebangs .
-    patchShebangs companion/util
-  '';
+  # postPatch = ''
+  #   patchShebangs .
+  # '';
 
   env = {
     EDGETX_VERSION_TAG = "${version}";
     LIBCLANG_PATH = "${lib.getLib llvmPackages.libclang}/lib";
-    SIMULATOR_PLUGINS = simulatorPlugins ? defaultSimulatorPlugins;
   };
 
   cmakeFlags = [
@@ -110,14 +110,17 @@ stdenv.mkDerivation rec {
 
   enableParallelBuilding = true;
 
-  # simplified re-implementation of build-companion.sh
+  # simplified re-implementation of tools/build-companion.sh
   buildPhase = ''
-    pwd
-    ls
     source ../tools/build-common.sh
-    ../tools/build-companion.sh -j$NIX_BUILD_CORES .. .
 
-    for plugin in "''${SIMULATOR_PLUGINS[@]}"; do
+    simulator_plugins=($(jq '.[]' <<< '${builtins.toJSON simulatorPlugins}'))
+    if [[ -z $simulator_plugins ]]; then
+      # build everything by default
+      readarray -t simulator_plugins < <(jq -c '.targets | map(.[1] | rtrimstr("-")) | sort | .[]' ../fw.json)
+    fi
+
+    for plugin in "''${simulator_plugins[@]}"; do
       echo "Building $plugin"
 
       BUILD_OPTIONS=""

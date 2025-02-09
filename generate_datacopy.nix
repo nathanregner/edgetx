@@ -15,10 +15,7 @@ stdenv.mkDerivation {
   buildInputs = [
     (python3.withPackages (
       packages: with packages; [
-        jinja2
         libclang
-        lz4
-        pillow
       ]
     ))
   ];
