@@ -23,7 +23,10 @@
             inherit
               generate_datacopy
               ;
-
+            simulatorPlugins = [
+              "mt12"
+              "tx16s"
+            ];
           };
           buildPlugin = pkgs.libsForQt5.callPackage ./simulator_plugin.nix {
             inherit

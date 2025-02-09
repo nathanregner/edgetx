@@ -23,7 +23,7 @@
   wrapQtAppsHook,
   yaml-cpp,
 
-  simulatorPlugins ? [ ], # empty to build all; at least one seems to be required
+  simulatorPlugins ? [ ], # empty to build all; at least one seems to be required?
   ...
 }:
 
@@ -114,7 +114,7 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     source ../tools/build-common.sh
 
-    simulator_plugins=($(jq '.[]' <<< '${builtins.toJSON simulatorPlugins}'))
+    simulator_plugins=($(jq -r '.[]' <<< '${builtins.toJSON simulatorPlugins}'))
     if [[ -z $simulator_plugins ]]; then
       # build everything by default
       readarray -t simulator_plugins < <(jq -c '.targets | map(.[1] | rtrimstr("-")) | sort | .[]' ../fw.json)
@@ -130,13 +130,13 @@ stdenv.mkDerivation rec {
       fi
 
       rm -f CMakeCache.txt native/CMakeCache.txt
-      cmake $BUILD_OPTIONS ..
+      cmake $cmakeFlags $BUILD_OPTIONS ..
       cmake --build . --target native-configure
       cmake --build native -j"$NIX_BUILD_CORES" --target libsimulator
     done
 
     cmake --build . --target native-configure
-    cmake --build native -j"NIX_BUILD_CORES" --target package
+    cmake --build native -j"$NIX_BUILD_CORES" --target package
   '';
 
   installPhase = ''
