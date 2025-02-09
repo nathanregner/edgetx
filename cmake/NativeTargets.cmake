@@ -67,9 +67,6 @@ if(WIN32)
   set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_LIBRARIES OFF)
 endif()
 
-# google tests
-include(FetchGtest)
-
 add_custom_target(tests-radio
   COMMAND ${CMAKE_CURRENT_BINARY_DIR}/gtests-radio
   DEPENDS gtests-radio

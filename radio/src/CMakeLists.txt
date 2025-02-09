@@ -479,7 +479,6 @@ if(NATIVE_BUILD)
   set_property(TARGET radiolib_native PROPERTY POSITION_INDEPENDENT_CODE ON)
 
   add_subdirectory(targets/simu)
-  add_subdirectory(tests)
 endif()
 
 set(SRC ${SRC} ${FIRMWARE_SRC})

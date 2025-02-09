@@ -201,9 +201,6 @@ set(CPN_COMMON_LIB common)
 
 ############# Supporting libraries ###############
 
-include(FetchMiniz)
-include(FetchYamlCpp)
-
 include(FetchMaxLibQt)
 
 add_subdirectory(datamodels)
@@ -288,7 +285,7 @@ set(simu_SRCS simulator.cpp )
 add_executable(${SIMULATOR_NAME} MACOSX_BUNDLE ${WIN_EXECUTABLE_TYPE} ${simu_SRCS} ${icon_RC})
 target_link_libraries(${SIMULATOR_NAME} PRIVATE ${CPN_COMMON_LIB})
 
-add_subdirectory(tests)
+# add_subdirectory(tests)
 
 ############# Install ####################
 

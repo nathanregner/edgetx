@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "miniz.h"
+#include <miniz/miniz.h>
 
 #include <QtCore>
 #include <QString>
